@@ -11,8 +11,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         fieldManager = new FieldManager(GetNumPlayers());
-        GraphicManager graphicManager = FindObjectOfType<GraphicManager>();
-        graphicManager.SetNumPlayers(GetNumPlayers());
     }
 
     /* Update is called once per frame

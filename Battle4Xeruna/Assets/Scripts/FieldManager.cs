@@ -7,10 +7,9 @@ using System.Collections.Generic;
  */
 public class FieldManager
 {
-    private int _numPlayers{get; set;}
-    private int _radius{get; set;}
+    private int _numPlayers;
+    private int _radius;
 
-    private TerrainObject[,] _terrains;
     private Building[,] _buildings;
     private Unit[,] _units;
 
@@ -19,25 +18,17 @@ public class FieldManager
     {
         _numPlayers = numPlayers_;
         _radius = Utils.GetRadius(numPlayers_);
-        _terrains = new TerrainObject[2*_radius+1, 2*_radius+1];
         _buildings = new Building[2*_radius+1, 2*_radius+1];
         _units = new Unit[2*_radius+1, 2*_radius+1];
 
         BuildCastles();
-        InitializeTerrains();
     }
 
-    // Update is called once per frame
-    /*void Update()
-    {
-        
-    }*/
-
+    // Tells whether the point (x, y) is on the map
     public bool IsOnMap(int x, int y)
     {
         return Utils.IsOnMap(x, y, _radius);
     }
-
     public bool IsOnMap(Vector2Int coord)
     {
         return IsOnMap(coord.x, coord.y);
@@ -60,30 +51,5 @@ public class FieldManager
             foreach (Vector2Int coord in castle)
                 _buildings[coord.x,coord.y] = new Castle(Utils.Color.Yellow);
         }
-    }
-
-    private void InitializeTerrains()
-    {
-        for (int x = 0; x <= 2*_radius; ++x)
-            for (int y = 0; y <= 2*_radius; ++y)
-                if (IsOnMap(x, y))
-                    _terrains[x, y] = new TerrainObject(_buildings[x,y]==null? Utils.Color.Green : _buildings[x,y].color);
-    }
-}
-
-public class TerrainObject
-{
-    public Utils.Color color;
-    public bool isLighted;
-
-    public TerrainObject(Utils.Color color_, bool isLighted_ = false)
-    {
-        SetColor(color_, false);
-    }
-
-    public void SetColor(Utils.Color color_, bool isLighted_ = false)
-    {
-        color = color_;
-        isLighted = isLighted_;
     }
 }

@@ -4,10 +4,12 @@ using System.Collections.Generic;
 
 public class GraphicManager : MonoBehaviour
 {
-    private int _numPlayers;
+    private int _numPlayers; // the number of players TODO should be private ad be set from Host
     private int _radius;
     // adjust rotate the objects to make them compatible with the camera
     private Quaternion _basicCameraRotation{get{return Quaternion.Euler(-90,0,0);}}
+    // scaling factor for the World
+    private static Vector2 _worldScale { get { return new Vector2(1.5f, 0.866f); } }
 
     // each array has 2 entries. [0] is for opaque material, [1] is for the bright material
     public Material[] GrassMaterial;
@@ -17,11 +19,13 @@ public class GraphicManager : MonoBehaviour
     public Material[] EarthMaterial;
     public Material[] StoneMaterial;
     
+    // Each array will contain one entry per player
     public GameObject Castle;
     private Vector2Int[] _castlePositions;
     private Quaternion[] _castleRotations;
     private GameObject[] _castles;  // Will contain some Castle instances
 
+    // An exagonal tile
     public GameObject Tile;
     public struct TileObject {
         public GameObject obj;
@@ -34,33 +38,47 @@ public class GraphicManager : MonoBehaviour
             materialsTop = materialsTop_;
             materialsBottom = materialsBottom_;
             isLighted = isLighted_;
-            setMaterials();
+            SetMaterials();
         }
         
-        public void setMaterials()
+        public void SetMaterials()
         {
             int lightedIdx = isLighted ? 1 : 0;
             obj.GetComponent<MeshRenderer>().materials = new Material[2] {materialsTop[lightedIdx], materialsBottom[lightedIdx]};
         }
+
+        public void setLight(bool isLighted_)
+        {
+            isLighted = isLighted_;
+            SetMaterials();
+        }
     }
     private TileObject[,] _tiles;  // will contain the _tiles
 
-    // scaling factor for the World
-    private static Vector2 _worldScale { get { return new Vector2(1.5f, 0.866f); } }
-
-    public void SetNumPlayers(int numPlayers_)
+    void Start()
     {
-        _numPlayers = numPlayers_;
+        _numPlayers = FindObjectOfType<GameManager>()._numPlayers;
         if (_numPlayers != 2 && _numPlayers !=3)
         {
             Debug.Log("Invalid number of players = " + _numPlayers);
             return;
         }
-        _radius = Utils.GetRadius(numPlayers_);
+        _radius = Utils.GetRadius(_numPlayers);
 
+        MoveCamera();
         CreateCastles();
         CreateTiles();
-        MoveCamera();
+    }
+
+    // The camera should be moved differently for different players
+    private void MoveCamera()
+    {
+        Camera camera = Camera.main;
+        if (_numPlayers <= 2)
+            camera.transform.position = new Vector3(0,12,-10);
+        else
+            camera.transform.position = new Vector3(0,13.5f,-11.5f);
+        camera.transform.eulerAngles = new Vector3(60,0,0);
     }
 
     // Create the _castles
@@ -115,32 +133,30 @@ public class GraphicManager : MonoBehaviour
                 }
     }
 
-    // The camera should be moved differently for different players
-    private void MoveCamera()
-    {
-        Camera camera = Camera.main;
-        if (_numPlayers <= 2)
-            camera.transform.position = new Vector3(0,12,-10);
-        else
-            camera.transform.position = new Vector3(0,13.5f,-11.5f);
-        camera.transform.eulerAngles = new Vector3(60,0,0);
-    }
-
+    // Convert from Map coordinates to World coordinates
     private Vector3 ToWorldCoord(int x, int y)
     {
         return new Vector3(_worldScale.x*(y-x), 0.0f, _worldScale.y*(x+y-2*_radius));
     }
-
     private Vector3 ToWorldCoord(Vector2Int coord)
     {
         return ToWorldCoord(coord.x, coord.y);
     }
 
+    // Convert from Map coordinates to World coordinates
+    // TODO need testing
+    private Vector2Int ToMapCoord(Vector3 worldCoord)
+    {
+        int x = (int)((double)(-worldCoord.x*_worldScale.y+worldCoord.y*_worldScale.x+2*_radius*_worldScale.x*_worldScale.y)/(4*_worldScale.x*_worldScale.y*_worldScale.y)+0.5);
+        int y = (int)((double)(+worldCoord.x*_worldScale.y+worldCoord.y*_worldScale.x+2*_radius*_worldScale.x*_worldScale.y)/(4*_worldScale.x*_worldScale.y*_worldScale.y)+0.5);
+        return new Vector2Int(x, y);
+    }
+
+    // Tells whether (x, y) is on the map (as Map coordinates)
     private bool IsOnMap(int x, int y)
     {
         return Utils.IsOnMap(x, y, _radius);
     }
-
     private bool IsOnMap(Vector2Int coord)
     {
         return IsOnMap(coord.x, coord.y);

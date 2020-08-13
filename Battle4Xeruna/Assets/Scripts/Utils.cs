@@ -43,11 +43,11 @@ public static class Utils
         return numPlayers <= 2 ? 5 : 6;
     }
 
+    // Tells whether the point (x, y) is on the Hexagonal map of required radius
     public static bool IsOnMap(int x, int y, int radius)
     {
         return x >= 0 && y >= 0 && x <= 2*radius && y <= 2*radius && x - y <= radius && y - x <= radius;
     }
-
     public static bool IsOnMap(Vector2Int coord, int radius)
     {
         return IsOnMap(coord.x, coord.y, radius);
@@ -62,7 +62,6 @@ public static class Utils
         else 
             return Math.Max(Math.Abs(dx), Math.Abs(dy));
     }
-
     public static int GridDistance(Vector2Int from, Vector2Int to)
     {
         return GridDistance(from.x, from.y, to.x, to.y);
