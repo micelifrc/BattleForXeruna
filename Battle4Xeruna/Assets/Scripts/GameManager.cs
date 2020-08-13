@@ -2,15 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 
-// Todo make it a singleton
 public class GameManager : MonoBehaviour
 {
+    public int _numPlayers; // the number of players TODO should be private ad be set from Host
     public FieldManager fieldManager;
 
     // Start is called before the first frame update
     void Start()
     {
-        fieldManager = new FieldManager(numPlayers());
+        fieldManager = new FieldManager(GetNumPlayers());
+        GraphicManager graphicManager = FindObjectOfType<GraphicManager>();
+        graphicManager.SetNumPlayers(GetNumPlayers());
     }
 
     /* Update is called once per frame
@@ -19,9 +21,8 @@ public class GameManager : MonoBehaviour
         
     }*/
 
-    // TODO can also return 3 in the future
-    public int numPlayers()
+    public int GetNumPlayers()
     {
-        return 2;
+        return _numPlayers;
     }
 }

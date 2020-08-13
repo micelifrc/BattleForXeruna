@@ -7,24 +7,24 @@ using System.Collections.Generic;
  */
 public class FieldManager
 {
-    private int NumPlayers{get; set;}
-    private int Radius{get; set;}
+    private int _numPlayers{get; set;}
+    private int _radius{get; set;}
 
-    private TerrainObject[,] terrains;
-    private Building[,] buildings;
-    private Unit[,] units;
+    private TerrainObject[,] _terrains;
+    private Building[,] _buildings;
+    private Unit[,] _units;
 
     // constructor
     public FieldManager(int numPlayers_)
     {
-        NumPlayers = numPlayers_;
-        Radius = NumPlayers <= 2 ? 5 : 6;
-        terrains = new TerrainObject[2*Radius+1, 2*Radius+1];
-        buildings = new Building[2*Radius+1, 2*Radius+1];
-        units = new Unit[2*Radius+1, 2*Radius+1];
+        _numPlayers = numPlayers_;
+        _radius = Utils.GetRadius(numPlayers_);
+        _terrains = new TerrainObject[2*_radius+1, 2*_radius+1];
+        _buildings = new Building[2*_radius+1, 2*_radius+1];
+        _units = new Unit[2*_radius+1, 2*_radius+1];
 
-        buildCastles();
-        initializeTerrains();
+        BuildCastles();
+        InitializeTerrains();
     }
 
     // Update is called once per frame
@@ -33,57 +33,57 @@ public class FieldManager
         
     }*/
 
-    public bool isOnMap(int x, int y)
+    public bool IsOnMap(int x, int y)
     {
-        return x >= 0 && y >= 0 && x <= 2*Radius && y <= 2*Radius && x - y <= Radius && y - x <= Radius;
+        return Utils.IsOnMap(x, y, _radius);
     }
 
-    public bool isOnMap(Vector2Int coord)
+    public bool IsOnMap(Vector2Int coord)
     {
-        return isOnMap(coord.x, coord.y);
+        return IsOnMap(coord.x, coord.y);
     }
 
-    private void buildCastles()
+    private void BuildCastles()
     {
         // build the blue castle
-        Vector2Int[] castle = NumPlayers <= 2? Utils.GetBall(9,9) : Utils.GetBall(11,6);
+        Vector2Int[] castle = _numPlayers <= 2? Utils.GetBall(9,9) : Utils.GetBall(11,6);
         foreach (Vector2Int coord in castle)
-            buildings[coord.x,coord.y] = new Castle(Utils.Color.Blue);
+            _buildings[coord.x,coord.y] = new Castle(Utils.Color.Blue);
 
         castle = Utils.GetBall(1,1);
         foreach (Vector2Int coord in castle)
-            buildings[coord.x,coord.y] = new Castle(Utils.Color.Red);
+            _buildings[coord.x,coord.y] = new Castle(Utils.Color.Red);
 
-        if (NumPlayers > 2)
+        if (_numPlayers > 2)
         {
             castle = Utils.GetBall(6,11);
             foreach (Vector2Int coord in castle)
-                buildings[coord.x,coord.y] = new Castle(Utils.Color.Yellow);
+                _buildings[coord.x,coord.y] = new Castle(Utils.Color.Yellow);
         }
     }
 
-    private void initializeTerrains()
+    private void InitializeTerrains()
     {
-        for (int x = 0; x <= 2*Radius; ++x)
-            for (int y = 0; y <= 2*Radius; ++y)
-                if (isOnMap(x, y))
-                    terrains[x, y] = new TerrainObject(buildings[x,y]==null? Utils.Color.Green : buildings[x,y].color);
+        for (int x = 0; x <= 2*_radius; ++x)
+            for (int y = 0; y <= 2*_radius; ++y)
+                if (IsOnMap(x, y))
+                    _terrains[x, y] = new TerrainObject(_buildings[x,y]==null? Utils.Color.Green : _buildings[x,y].color);
     }
 }
 
 public class TerrainObject
 {
     public Utils.Color color;
-    public bool IsLighted {set; get;}
+    public bool isLighted;
 
     public TerrainObject(Utils.Color color_, bool isLighted_ = false)
     {
-        setColor(color_, false);
+        SetColor(color_, false);
     }
 
-    public void setColor(Utils.Color color_, bool isLighted_ = false)
+    public void SetColor(Utils.Color color_, bool isLighted_ = false)
     {
         color = color_;
-        IsLighted = isLighted_;
+        isLighted = isLighted_;
     }
 }
