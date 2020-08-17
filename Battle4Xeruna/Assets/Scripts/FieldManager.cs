@@ -14,10 +14,10 @@ public class FieldManager
     private Unit[,] _units;
 
     // constructor
-    public FieldManager(int numPlayers_)
+    public FieldManager()
     {
-        _numPlayers = numPlayers_;
-        _radius = Utils.GetRadius(numPlayers_);
+        _numPlayers = Utils.numPlayers;
+        _radius = Utils.radius;
         _buildings = new Building[2*_radius+1, 2*_radius+1];
         _units = new Unit[2*_radius+1, 2*_radius+1];
 
@@ -27,11 +27,11 @@ public class FieldManager
     // Tells whether the point (x, y) is on the map
     public bool IsOnMap(int x, int y)
     {
-        return Utils.IsOnMap(x, y, _radius);
+        return Utils.IsOnMap(x, y);
     }
     public bool IsOnMap(Vector2Int coord)
     {
-        return IsOnMap(coord.x, coord.y);
+        return Utils.IsOnMap(coord);
     }
 
     private void BuildCastles()
