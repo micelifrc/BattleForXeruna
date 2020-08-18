@@ -11,6 +11,9 @@ public static class Utils
     // main Colors, to represent players, units, buildings and terrein
     public enum Color{Blue, Red, Yellow, Green};
 
+    // the 6 polar directions
+    public enum PolarDirection{N, NE, SE, S, SW, NW};
+
     // the scaling factor of the map
     public static Vector2 worldScale { get { return new Vector2(1.5f, 0.866f); } }
 
@@ -89,5 +92,22 @@ public static class Utils
         int x = (int)((double)(-worldCoord.x*worldScale.y+worldCoord.z*worldScale.x)/(2*worldScale.x*worldScale.y)+radius+0.5);
         int y = (int)((double)(+worldCoord.x*worldScale.y+worldCoord.z*worldScale.x)/(2*worldScale.x*worldScale.y)+radius+0.5);
         return new Vector2Int(x, y);
+    }
+
+    // the increment in MapPosition when taking a step in the input direction
+    public static Vector2Int ToCoordIncrement(PolarDirection direction)
+    {
+        switch (direction)
+        {
+            case PolarDirection.N: return new Vector2Int(1, 1);
+            case PolarDirection.NE: return new Vector2Int(0,1);
+            case PolarDirection.SE: return new Vector2Int(-1,0);
+            case PolarDirection.S: return new Vector2Int(-1, -1);
+            case PolarDirection.SW: return new Vector2Int(0,-1);
+            case PolarDirection.NW: return new Vector2Int(1,0);
+            default: 
+                Debug.Log("Invalid direction in ToCoordIncrement");
+                return new Vector2Int(0, 0);  // should never happen
+        }
     }
 }
