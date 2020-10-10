@@ -8,3 +8,5 @@ This basic turn-based game is played on an hexagonal-based map, and is inspired 
 
 This is a game I am fully developing, as a solo developer, despite my lack of experience both in game design, and especially in graphics.
 The game is developed using Unity, with C#. The images and animations are creted with Blender. I am currently very inexperienced in all of them.
+
+The models of the game were realized using Blender. The soundtrack was realized using BoscaCeoil.
